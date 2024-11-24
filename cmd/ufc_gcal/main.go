@@ -59,7 +59,7 @@ func getEvents() []Event {
 	return apiRes.Data
 }
 
-func prettyPrintEvents(event Event) {
+func prettyPrintEvent(event Event) {
 	istTime, err := convertETtoIST(event.Date)
 	if err != nil {
 		log.Fatal(err)
@@ -85,6 +85,6 @@ func main() {
 	events := getEvents()
 
 	for i := 0; i < len(events); i++ {
-		prettyPrintEvents(events[i])
+		prettyPrintEvent(events[i])
 	}
 }
