@@ -60,12 +60,17 @@ func getEvents() []Event {
 }
 
 func prettyPrintEvents(event Event) {
+	istTime, err := convertETtoIST(event.Date)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Printf("\n\n\n\n")
 	fmt.Printf(`
 		------------------------------- %s -------------------------------
+		%v (Early prelim time)
 		%s
-		%s
-	`, event.Title, event.Date, event.Link)
+	`, event.Title, istTime.Format("Monday, January 2, 3:04 PM MST"), event.Link)
 
 	for i := 0; i < len(event.Fights); i++ {
 		fmt.Printf(`

@@ -1,8 +1,8 @@
 run:
-	go run cmd/ufc_gcal/main.go
+	go run ./cmd/ufc_gcal
 
 build:
-	go build -o build/ufc_gcal cmd/ufc_gcal/main.go
+	go build -o build/ufc_gcal ./cmd/ufc_gcal
 
 test:
 	go test ./...
