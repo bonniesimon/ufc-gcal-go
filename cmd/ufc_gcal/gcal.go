@@ -26,11 +26,9 @@ func NewGoogleCalendar() GoogleCalendar {
 	}
 }
 
-func (GoogleCalendar) GetCalendarEvents() *calendar.Events {
-	srv := getCalendarService()
-
+func (gCal GoogleCalendar) GetCalendarEvents() *calendar.Events {
 	t := time.Now().Format(time.RFC3339)
-	gcalEvents, err := srv.Events.List("primary").ShowDeleted(false).SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
+	gcalEvents, err := gCal.service.Events.List("primary").ShowDeleted(false).SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
@@ -38,8 +36,8 @@ func (GoogleCalendar) GetCalendarEvents() *calendar.Events {
 	return gcalEvents
 }
 
-func (cal GoogleCalendar) ShowCalendarEvents() {
-	gcalEvents := cal.GetCalendarEvents()
+func (gCal GoogleCalendar) ShowCalendarEvents() {
+	gcalEvents := gCal.GetCalendarEvents()
 	prettyPrintCalendarEvents(gcalEvents)
 }
 
