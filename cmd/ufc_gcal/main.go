@@ -7,5 +7,6 @@ func main() {
 		PrettyPrintEvent(events[i])
 	}
 
-	ShowCalendarEvents()
+	calendar := NewGoogleCalendar()
+	calendar.ShowCalendarEvents()
 }

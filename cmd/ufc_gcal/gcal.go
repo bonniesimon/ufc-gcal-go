@@ -15,7 +15,18 @@ import (
 	"google.golang.org/api/option"
 )
 
-func GetCalendarEvents() *calendar.Events {
+type GoogleCalendar struct {
+	service *calendar.Service
+}
+
+func NewGoogleCalendar() GoogleCalendar {
+	srv := getCalendarService()
+	return GoogleCalendar{
+		service: srv,
+	}
+}
+
+func (GoogleCalendar) GetCalendarEvents() *calendar.Events {
 	srv := getCalendarService()
 
 	t := time.Now().Format(time.RFC3339)
@@ -27,8 +38,8 @@ func GetCalendarEvents() *calendar.Events {
 	return gcalEvents
 }
 
-func ShowCalendarEvents() {
-	gcalEvents := GetCalendarEvents()
+func (cal GoogleCalendar) ShowCalendarEvents() {
+	gcalEvents := cal.GetCalendarEvents()
 	prettyPrintCalendarEvents(gcalEvents)
 }
 
