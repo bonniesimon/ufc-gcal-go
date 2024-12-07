@@ -23,6 +23,4 @@ go.work
 README.local.md
 
 # Credentials
-credentials.json
-
-token.json
+config/credentials
