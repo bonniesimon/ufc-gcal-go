@@ -17,12 +17,16 @@ import (
 
 type GoogleCalendar struct {
 	service *calendar.Service
+	ctx     context.Context
 }
 
 func NewGoogleCalendar() GoogleCalendar {
-	srv := getCalendarService()
+	ctx := context.Background()
+	srv := getCalendarService(&ctx)
+
 	return GoogleCalendar{
 		service: srv,
+		ctx:     ctx,
 	}
 }
 
@@ -56,8 +60,7 @@ func prettyPrintCalendarEvents(gcalEvents *calendar.Events) {
 	}
 }
 
-func getCalendarService() *calendar.Service {
-	ctx := context.Background()
+func getCalendarService(ctx *context.Context) *calendar.Service {
 	b, err := os.ReadFile("config/credentials/credentials.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
@@ -70,7 +73,7 @@ func getCalendarService() *calendar.Service {
 	}
 	client := getClient(config)
 
-	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
+	srv, err := calendar.NewService(*ctx, option.WithHTTPClient(client))
 	if err != nil {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
