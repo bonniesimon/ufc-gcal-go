@@ -45,6 +45,32 @@ func (gCal GoogleCalendar) ShowCalendarEvents() {
 	prettyPrintCalendarEvents(gcalEvents)
 }
 
+func (gCal GoogleCalendar) AddCalendarEvent() {
+	ufcCalId := gCal.getCalendarIdByTitle("UFC")
+	fmt.Println(ufcCalId)
+}
+
+func (gCal GoogleCalendar) getCalendarIdByTitle(title string) string {
+	listRes, err := gCal.service.CalendarList.List().Fields("items/id", "items/summary").Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve list of calendars: %v", err)
+	}
+
+	var ufcCalId string
+	for _, v := range listRes.Items {
+		if v.Summary == title {
+			ufcCalId = v.Id
+		}
+	}
+
+	ufcCal, err := gCal.service.CalendarList.Get(ufcCalId).Do()
+	if err != nil {
+		log.Fatalf("Unable to get gcal with id %s: %v", ufcCalId, err)
+	}
+
+	return ufcCal.Id
+}
+
 func prettyPrintCalendarEvents(gcalEvents *calendar.Events) {
 	fmt.Println("Upcoming events:")
 	if len(gcalEvents.Items) == 0 {
@@ -67,7 +93,7 @@ func getCalendarService(ctx *context.Context) *calendar.Service {
 	}
 
 	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
+	config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope, calendar.CalendarScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}

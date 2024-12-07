@@ -1,12 +1,13 @@
 package main
 
 func main() {
-	events := GetMMAEvents()
+	// 	events := GetMMAEvents()
 
-	for i := 0; i < len(events); i++ {
-		PrettyPrintEvent(events[i])
-	}
+	// 	for i := 0; i < len(events); i++ {
+	// 		PrettyPrintEvent(events[i])
+	// 	}
 
 	calendar := NewGoogleCalendar()
 	calendar.ShowCalendarEvents()
+	calendar.AddCalendarEvent()
 }
