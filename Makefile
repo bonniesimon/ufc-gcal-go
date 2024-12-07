@@ -1,5 +1,7 @@
-run:
-	go run ./cmd/ufc_gcal
+.PHONY: build test
+
+run: build
+	./build/ufc_gcal
 
 build:
 	go build -o build/ufc_gcal ./cmd/ufc_gcal
