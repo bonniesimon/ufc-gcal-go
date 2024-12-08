@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
@@ -50,8 +49,6 @@ func (gCal GoogleCalendar) AddCalendarEvent(title, description string, start, en
 	ufcCalId := gCal.getCalendarIdByTitle("UFC")
 	fmt.Println(ufcCalId)
 
-	spew.Dump(start.String(), end)
-
 	event := &calendar.Event{
 		Summary:     title,
 		Description: description,
@@ -67,7 +64,6 @@ func (gCal GoogleCalendar) AddCalendarEvent(title, description string, start, en
 
 	publishedEvent, err := gCal.service.Events.Insert(ufcCalId, event).Do()
 	if err != nil {
-		spew.Dump(err)
 		log.Fatalf("Unable to create event. %v\n", err)
 	}
 
