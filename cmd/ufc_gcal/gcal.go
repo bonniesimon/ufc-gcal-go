@@ -30,7 +30,7 @@ func NewGoogleCalendar() GoogleCalendar {
 	}
 }
 
-func (gCal GoogleCalendar) GetCalendarEvents() *calendar.Events {
+func (gCal *GoogleCalendar) GetCalendarEvents() *calendar.Events {
 	t := time.Now().Format(time.RFC3339)
 	gcalEvents, err := gCal.service.Events.List("primary").ShowDeleted(false).SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
@@ -40,12 +40,12 @@ func (gCal GoogleCalendar) GetCalendarEvents() *calendar.Events {
 	return gcalEvents
 }
 
-func (gCal GoogleCalendar) ShowCalendarEvents() {
+func (gCal *GoogleCalendar) ShowCalendarEvents() {
 	gcalEvents := gCal.GetCalendarEvents()
 	prettyPrintCalendarEvents(gcalEvents)
 }
 
-func (gCal GoogleCalendar) AddCalendarEvent(title, description string, start, end time.Time) {
+func (gCal *GoogleCalendar) AddCalendarEvent(title, description string, start, end time.Time) {
 	ufcCalId := gCal.getCalendarIdByTitle("UFC")
 	fmt.Println(ufcCalId)
 
@@ -70,7 +70,7 @@ func (gCal GoogleCalendar) AddCalendarEvent(title, description string, start, en
 	fmt.Printf("Event created: %s\n", publishedEvent.HtmlLink)
 }
 
-func (gCal GoogleCalendar) getCalendarIdByTitle(title string) string {
+func (gCal *GoogleCalendar) getCalendarIdByTitle(title string) string {
 	listRes, err := gCal.service.CalendarList.List().Fields("items/id", "items/summary").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve list of calendars: %v", err)
