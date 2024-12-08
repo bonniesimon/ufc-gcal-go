@@ -6,13 +6,15 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Event struct {
-	Title  string  `json:"title"`
-	Date   string  `json:"date"`
-	Link   string  `json:"link"`
-	Fights []Fight `json:"fights"`
+	Title      string    `json:"title"`
+	DateString string    `json:"date"`
+	Link       string    `json:"link"`
+	Fights     []Fight   `json:"fights"`
+	DateTime   time.Time // Saving as IST time for now
 }
 
 type Fight struct {
@@ -56,21 +58,22 @@ func GetMMAEvents() []Event {
 		log.Fatal(err)
 	}
 
+	// Process DateString into time.Time and update Event.DateTime
+	for i, v := range apiRes.Data {
+		istTime, _ := convertETtoIST(v.DateString)
+		apiRes.Data[i].DateTime = istTime
+	}
+
 	return apiRes.Data
 }
 
 func PrettyPrintEvent(event Event) {
-	istTime, err := convertETtoIST(event.Date)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	fmt.Printf("\n\n\n\n")
 	fmt.Printf(`
 		------------------------------- %s -------------------------------
 		%v (Early prelim time)
 		%s
-	`, event.Title, istTime.Format("Monday, January 2, 3:04 PM MST"), event.Link)
+	`, event.Title, event.DateTime.Format("Monday, January 2, 3:04 PM MST"), event.Link)
 
 	for i := 0; i < len(event.Fights); i++ {
 		fmt.Printf(`
@@ -79,4 +82,16 @@ func PrettyPrintEvent(event Event) {
 	}
 
 	fmt.Println("------------------------------------------------------------------")
+}
+
+func GetEventAsString(event Event) string {
+	result := ""
+	header := fmt.Sprintf("%s\n%v (Early prelim time)\n%s\n", event.Title, event.DateTime.Format("Monday, January 2, 3:04 PM MST"), event.Link)
+	result += header
+
+	for i := 0; i < len(event.Fights); i++ {
+		result += fmt.Sprintf("\n%s vs %s\n", event.Fights[i].FighterA.Name, event.Fights[i].FighterB.Name)
+	}
+
+	return result
 }

@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
@@ -45,9 +46,32 @@ func (gCal GoogleCalendar) ShowCalendarEvents() {
 	prettyPrintCalendarEvents(gcalEvents)
 }
 
-func (gCal GoogleCalendar) AddCalendarEvent() {
+func (gCal GoogleCalendar) AddCalendarEvent(title, description string, start, end time.Time) {
 	ufcCalId := gCal.getCalendarIdByTitle("UFC")
 	fmt.Println(ufcCalId)
+
+	spew.Dump(start.String(), end)
+
+	event := &calendar.Event{
+		Summary:     title,
+		Description: description,
+		Start: &calendar.EventDateTime{
+			DateTime: start.Format(time.RFC3339),
+			TimeZone: "Asia/Kolkata",
+		},
+		End: &calendar.EventDateTime{
+			DateTime: end.Format(time.RFC3339),
+			TimeZone: "Asia/Kolkata",
+		},
+	}
+
+	publishedEvent, err := gCal.service.Events.Insert(ufcCalId, event).Do()
+	if err != nil {
+		spew.Dump(err)
+		log.Fatalf("Unable to create event. %v\n", err)
+	}
+
+	fmt.Printf("Event created: %s\n", publishedEvent.HtmlLink)
 }
 
 func (gCal GoogleCalendar) getCalendarIdByTitle(title string) string {
@@ -63,12 +87,7 @@ func (gCal GoogleCalendar) getCalendarIdByTitle(title string) string {
 		}
 	}
 
-	ufcCal, err := gCal.service.CalendarList.Get(ufcCalId).Do()
-	if err != nil {
-		log.Fatalf("Unable to get gcal with id %s: %v", ufcCalId, err)
-	}
-
-	return ufcCal.Id
+	return ufcCalId
 }
 
 func prettyPrintCalendarEvents(gcalEvents *calendar.Events) {
